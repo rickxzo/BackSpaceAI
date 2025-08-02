@@ -107,7 +107,7 @@ PyCoder = TextAgent(
     
     @ INSRUCTIONS
     -> Always understand the file content properly.
-    -> Write the final code, which would be the entire original code with your edits. Do not leave out any part.
+    -> Write the final code, which would be the entire original code with your edits. Do not leave out any part even if the managers asks so. [STRICT]
     -> If instruction feels ambiguous or provided code seems irrelevant, send back a relevant query to the manager.
 
     @ OUTPUT FORMAT
@@ -269,9 +269,10 @@ FILE: .gitignore
 
 class Py(TypedDict):
     old_code: str
+    old_file: str
     instruct: str
-    code: str
     response: str
+    code: str
 
 def py_draft(state: Py):
     prompt = f"""
@@ -303,9 +304,16 @@ def py_query(state: Py):
 
 def py_code(state: Py):
     response = json.loads(state["response"])
-    print("\nPY CODE: ", code_parser(response["content"]))
+    code = code_parser(response["content"])
+    sandbox.fs.replace_in_files(
+        files=[f"/home/daytona/workspace/repo/{state["old_file"]}", code],
+        pattern="old_code",
+        new_value="new_code"
+    )
+    
+    print("\nPY CODE: ", code)
     return {
-        "code": code_parser(response["content"])
+        "code": code
     }
 
 py_graph = StateGraph(Py)
@@ -395,9 +403,10 @@ def instruct(state: Manage):
     content = output["content"]
     response = py_coder.invoke({
         "old_code": repo_files[file],
+        "old_file": file,
         "instruct": content,
-        "code": "",
-        "response": ""
+        "response": "",
+        "code": ""
     })["code"]
     astn = state["responses"]
     astn[f"To: {to}. Instruction: {content}"] = response
