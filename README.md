@@ -24,7 +24,7 @@ BackSpaceAI currently only supports Flask backend and VueJS / VanillaJS frontend
 - LangGraph: Agent Architecture Design
 
 ### Architecture
-Provide Github Repo Link --> Repository Sandbox Cloning --> Interact with AI Agent (Manager) --> Manager uses tools & coding assistants --> Provides responss to user
+Provide Github Repo Link --> Repository Sandbox Cloning --> Interact with AI Agent (Manager) --<br>--> Manager uses tools & coding assistants --> Provides response to user
 
 
 
